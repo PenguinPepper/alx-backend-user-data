@@ -35,7 +35,26 @@ class DB:
         The method should save the user to the database.
         No validations are required at this stage
         """
-        new_user = User(email=email,hashed_password= hashed_password)
+        new_user = User()
+        new_user.email = email
+        new_user.hashed_password = hashed_password
         self._session.add(new_user)
         self._session.commit()
         return new_user
+
+    def find_user_by(self):
+        """
+        This method takes in arbitrary keyword arguments and returns
+        the first row found in the users table as filtered by the
+        method’s input arguments. No validation of input arguments
+        required at this point. Make sure that SQLAlchemy’s NoResultFound
+        and InvalidRequestError are raised when no results are found, or
+        when wrong query arguments are passed, respectively.
+        """
+        pass
+
+    def update_user(self):
+        """
+        update user
+        """
+        pass
