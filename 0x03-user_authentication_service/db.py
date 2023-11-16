@@ -3,6 +3,8 @@
 """
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
 
@@ -42,7 +44,7 @@ class DB:
         self._session.commit()
         return new_user
 
-    def find_user_by(self):
+    def find_user_by(self, **kwargs):
         """
         This method takes in arbitrary keyword arguments and returns
         the first row found in the users table as filtered by the
@@ -51,7 +53,16 @@ class DB:
         and InvalidRequestError are raised when no results are found, or
         when wrong query arguments are passed, respectively.
         """
-        pass
+        for key, value in kwargs.items():
+            try:
+                user = self._session.query(User).filter(
+                        getattr(User, key) == value)
+            except AttributeError:
+                raise InvalidRequestError
+        db_user = user.first()
+        if db_user is None:
+            raise NoResultFound
+        return db_user
 
     def update_user(self):
         """
