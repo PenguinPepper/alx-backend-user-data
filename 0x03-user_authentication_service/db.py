@@ -53,13 +53,12 @@ class DB:
         and InvalidRequestError are raised when no results are found, or
         when wrong query arguments are passed, respectively.
         """
+        users = self._session.query(User)
         for key, value in kwargs.items():
-            try:
-                user = self._session.query(User).filter(
-                        getattr(User, key) == value)
-            except AttributeError:
+            if key not in User.__dict__:
                 raise InvalidRequestError
-        db_user = user.first()
+            users = users.filter(getattr(User, key) == value)
+        db_user = users.first()
         if db_user is None:
             raise NoResultFound
         return db_user
