@@ -18,6 +18,7 @@ def _hash_password(password: str) -> str:
 
     return hashed_password
 
+
 class Auth:
     """Auth class to interact with the authentication database.
     """
@@ -36,7 +37,7 @@ class Auth:
 
         return hashed_password.decode()
 
-    def register_user(self, email: str, password:str ) -> User:
+    def register_user(self, email: str, password: str) -> User:
         """Take mandatory email and password
         string arguments and return a User object.
         If a user already exist with the passed
@@ -52,4 +53,3 @@ class Auth:
         except NoResultFound:
             pw = self._hash_password(password)
             self._db.add_user(email, pw)
-
