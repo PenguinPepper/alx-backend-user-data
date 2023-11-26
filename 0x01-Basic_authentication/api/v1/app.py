@@ -12,6 +12,13 @@ import os
 app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
+auth = getenv('AUTH_TYPE')
+
+if auth == 'auth':
+    from api.v1.auth.auth import Auth
+    auth = Auth()
+else:
+    auth = None
 
 
 @app.errorhandler(404)
@@ -34,6 +41,29 @@ def forbidden(error) -> str:
     """
     return jsonify({"error": "Forbidden"}), 403
 
+
+@app.before_request
+def filtering():
+    """
+    if auth is None, do nothing
+    if request.path is not part of this list ['/api/v1/status/',
+    '/api/v1/unauthorized/', '/api/v1/forbidden/'], do nothing
+    - you must use the method require_auth from the auth instance
+    if auth.authorization_header(request) returns None, raise the
+    error 401 - you must use abort
+    if auth.current_user(request) returns None, raise the
+    error 403 - you must use abort
+    """
+    routes = ['/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
+    if auth is None:
+        return
+    elif auth.require_auth(request.path, routes) is False:
+        return
+    elif auth.authorization_header(request) is None:
+        print(f"Authorization header: {auth.authorization_header(request)}")
+        abort(401)
+    elif auth.current_user(request) is None:
+        abort(403)
 
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
