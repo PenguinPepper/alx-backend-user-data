@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Module contains the class BasicAuth"""
 from api.v1.auth.auth import Auth
+import base64
+import binascii
 
 
 class BasicAuth(Auth):
@@ -27,3 +29,26 @@ class BasicAuth(Auth):
             return arr[1]
         except AttributeError:
             return None
+
+    def decode_base64_authorization_header(self, base64_authorization_header:
+                                           str) -> str:
+        """
+        returns the decoded value of a Base64
+        string base64_authorization_header:
+        Return None if base64_authorization_header is None
+        Return None if base64_authorization_header is not a string
+        Return None if base64_authorization_header
+        is not a valid Base64 - you can use try/except
+        Otherwise, return the decoded value as
+        UTF8 string - you can use decode('utf-8')
+        """
+        if (base64_authorization_header is None or
+           isinstance(base64_authorization_header, str) is False):
+            return None
+        else:
+            try:
+                decoded_value = base64.b64decode(base64_authorization_header)\
+                        .decode('utf-8')
+                return decoded_value
+            except binascii.Error as e:
+                return None
