@@ -59,7 +59,7 @@ class BasicAuth(Auth):
         returns the user email and password from the Base64 decoded value.
         This method must return 2 values
         Return None, None if decoded_base64_authorization_header is None
-        Return None, None if: 
+        Return None, None if:
          decoded_base64_authorization_header is not a string
          decoded_base64_authorization_header doesn’t contain :
         Otherwise, return the user email and the user
