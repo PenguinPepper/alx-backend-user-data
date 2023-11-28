@@ -3,6 +3,8 @@
 from api.v1.auth.auth import Auth
 import base64
 import binascii
+from typing import TypeVar
+from models.user import User
 
 
 class BasicAuth(Auth):
@@ -75,3 +77,31 @@ class BasicAuth(Auth):
             return (arr2[0], arr2[1])
         except (AttributeError, IndexError):
             return nan
+
+    def user_object_from_credentials(self, user_email: str,
+                                     user_pwd: str) -> TypeVar('User'):
+        """
+        returns the User instance based on his email and password.
+        Return None if user_email is None or not a string
+        Return None if user_pwd is None or not a string
+        Return None if your database (file) doesn’t
+        contain any User instance with email equal
+        to user_email - you should use the class method
+        search of the User to lookup the list of users
+        based on their email. Don’t forget to test all
+        cases: “what if there is no user in DB?”, etc.
+        Return None if user_pwd is not the password of the User instance
+        found - you must use the method is_valid_password of User
+        Otherwise, return the User instance
+        """
+        if (user_email is None or isinstance(user_email, str) is False):
+            return None
+        if (user_pwd is None or isinstance(user_pwd, str) is False):
+            return None
+        mail = {'email': user_email}
+        user = User()
+        if user.search(mail) is None:
+            return None
+        else:
+            if user.is_valid_password(user_pwd):
+                return user
